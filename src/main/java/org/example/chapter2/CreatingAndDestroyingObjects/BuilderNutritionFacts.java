@@ -1,4 +1,4 @@
-package org.example.chap2CreatingAndDestroyingObjects;
+package org.example.chapter2.CreatingAndDestroyingObjects;
 
 public class BuilderNutritionFacts {
     private final int servingSize;

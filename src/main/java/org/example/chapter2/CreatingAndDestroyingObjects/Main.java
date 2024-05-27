@@ -1,8 +1,8 @@
-package org.example;
+package org.example.chapter2.CreatingAndDestroyingObjects;
 
-import org.example.chap2CreatingAndDestroyingObjects.BuilderNutritionFacts;
-import org.example.chap2CreatingAndDestroyingObjects.JavaBeanNutritionFacts;
-import org.example.chap2CreatingAndDestroyingObjects.TelescopingConstructorPatternNutritionFacts;
+import org.example.chapter2.CreatingAndDestroyingObjects.BuilderNutritionFacts;
+import org.example.chapter2.CreatingAndDestroyingObjects.JavaBeanNutritionFacts;
+import org.example.chapter2.CreatingAndDestroyingObjects.TelescopingConstructorPatternNutritionFacts;
 
 public class Main {
     public static void main(String[] args) {

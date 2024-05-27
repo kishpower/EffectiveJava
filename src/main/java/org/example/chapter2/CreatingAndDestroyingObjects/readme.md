@@ -183,3 +183,6 @@ ComplexNumber polar = ComplexNumber.fromPolar(1, Math.PI / 4);
     - Verbose Syntax:
         They can sometimes lead to verbose code when compared to constructors.
 
+***
+
+### Some helpful items:
