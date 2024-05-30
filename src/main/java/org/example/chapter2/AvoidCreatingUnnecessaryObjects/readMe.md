@@ -6,14 +6,50 @@
 
     - Example 1: Static Factory Method
         Instead of creating a new Boolean object each time, use the static factory method Boolean.valueOf(boolean) which reuses the instances Boolean.TRUE and Boolean.FALSE.
-```java
-// Avoid this:
-Boolean bool1 = new Boolean(true);
-Boolean bool2 = new Boolean(true);
+  ```java
+  // Avoid this:
+  Boolean bool1 = new Boolean(true);
+  Boolean bool2 = new Boolean(true);
+  
+  // Prefer this:
+  Boolean bool3 = Boolean.valueOf(true);
+  Boolean bool4 = Boolean.valueOf(true);
+  ```
+  - Example 2: `isBabyBoomer` creates a new `Calender` , `Timezone` and two `Date` instances each time it is invoked.
 
-// Prefer this:
-Boolean bool3 = Boolean.valueOf(true);
-Boolean bool4 = Boolean.valueOf(true);
+  ```java
+  public class Person {
+      private final Date birthDate;
+      // Other methods , fields and constructors omitted.
+
+      //Don't do this.
+      public boolean isBabyBoomer() {
+          // unnecessary allocation of expensive objects.
+
+          Calendar gmtCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+          gmtCal.set(1946, Calendar.JANUARY, 1, 0, 0, 0);
+          Date boomStart = gmtCal.getTime();
+          gmtCal.set(1965, Calendar.JANUARY, 0, 0, 0, 0);
+          Date boomEnd = gmtCal.getTime();
+          return birthDate.compareTo(boomStart) >= 0 && birthDate.compareTo(boomEnd) < 0;
+      }
+  }
+  ```
+    Use Static Initializer: 
+```java
+public class Person{
+    private final Date birthDate;    
+    static{
+      Calendar gmtCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+      gmtCal.set(1946, Calendar.JANUARY, 1, 0, 0, 0);
+      Date boomStart = gmtCal.getTime();
+      gmtCal.set(1965, Calendar.JANUARY, 0, 0, 0, 0);
+      Date boomEnd = gmtCal.getTime();
+    }
+  public boolean isBabyBoomer() {
+    return birthDate.compareTo(boomStart) >= 0 && birthDate.compareTo(boomEnd) < 0;
+  } 
+}
 ```
 
 - Reuse Immutable Objects:
@@ -114,4 +150,74 @@ public class Main {
 class MyObject {
     // Expensive-to-create object
 }
+```
+
+- Eliminate Obsolete Object Reference:
+
+  Obsolete object references are references that are no longer needed but are not nullified, causing memory leaks. When an object is no longer used, its reference should be set to null to allow the garbage collector to reclaim the memory.
+  Example: Memory Leak Due to Obsolete References.
+  - Example: Memory Leak Due to Obsolete References
+
+  Consider a simple stack implementation:
+
+```java
+public class Stack {
+    private Object[] elements;
+    private int size = 0;
+    private static final int DEFAULT_INITIAL_CAPACITY = 16;
+
+    public Stack() {
+        elements = new Object[DEFAULT_INITIAL_CAPACITY];
+    }
+
+    public void push(Object e) {
+        ensureCapacity();
+        elements[size++] = e;
+    }
+
+    public Object pop() {
+        if (size == 0) {
+            throw new EmptyStackException();
+        }
+        return elements[--size];
+    }
+
+    private void ensureCapacity() {
+        if (elements.length == size) {
+            elements = Arrays.copyOf(elements, 2 * size + 1);
+        }
+    }
+}
+
+```
+In the above code, the pop method does not remove the reference to the popped element from the elements array, leading to a potential memory leak. Even though the element is no longer accessible through the stack, it cannot be garbage collected because it is still referenced by the array.
+Check fix in the Main Class.
+
+- Avoiding Finalizers
+
+  Finalizers are methods that the garbage collector calls before reclaiming the memory of an object. They are unpredictable, can cause performance issues, and are generally not needed. Instead, use the AutoCloseable interface and try-with-resources statement for cleanup.
+
+```java
+public class Resource implements AutoCloseable {
+    public Resource() {
+        // Acquire resource
+        System.out.println("Resource acquired");
+    }
+
+    @Override
+    public void close() {
+        // Release resource
+        System.out.println("Resource released");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try (Resource resource = new Resource()) {
+            // Use resource
+            System.out.println("Using resource");
+        }
+    }
+}
+
 ```

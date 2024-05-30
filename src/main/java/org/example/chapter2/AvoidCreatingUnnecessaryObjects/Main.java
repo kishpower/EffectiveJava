@@ -1,9 +1,17 @@
 package org.example.chapter2.AvoidCreatingUnnecessaryObjects;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.TimeZone;
+
 public class Main {
     public static void main(String[] args) throws Exception {
 //        using static factory methods instead of constructors
 //        staticFactories();
+//        staticFactories2();
 
 
 //        Reuse immutable objects
@@ -19,6 +27,61 @@ public class Main {
 
 //        Consider Object Pools:
 //        objectPools();
+
+
+        // Eliminate Obsolete Object ref
+//        eliminateObsoleteObjectRef();
+
+        // Avoid Finalisers
+//        avoidFinalizers();
+    }
+
+    private static void avoidFinalizers() {
+        //
+
+        try(BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir").concat("/src/main/java/org/example/chapter2/AvoidCreatingUnnecessaryObjects/avoidFinalisers.txt")))){
+           String line;
+           while ((line = reader.readLine()) != null){
+               System.out.println("line = " + line);
+           }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void eliminateObsoleteObjectRef() {
+        // avoid this
+        Stack stack = new Stack();
+        stack.push(1);
+        System.out.println(stack);
+
+        //use this
+        Stack1 stack1 = new Stack1();
+        stack1.push(1);
+        System.out.println("stack1 = " + stack1);
+    }
+
+    private static void staticFactories2() {
+        // avoid this - Person class uses heavy memory
+//        Calendar gmtCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//        gmtCal.set(1950, 0 , 0 , 0, 0,0);
+//        Person person = new Person(gmtCal.getTime());
+//        gmtCal.set(1980, 0 , 0 , 0, 0,0);
+//        Person person1 = new Person(gmtCal.getTime());
+//        System.out.println("person.isBabyBoomer() = " + person.isBabyBoomer());
+//        System.out.println("person1.isBabyBoomer() = " + person1.isBabyBoomer());
+
+        // try this - Person1 class uses static block
+        Calendar gmtCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        gmtCal.set(1950, 0 , 0 , 0, 0,0);
+        Person1 person = new Person1(gmtCal.getTime());
+        gmtCal.set(1980, 0 , 0 , 0, 0,0);
+        Person1 person1 = new Person1(gmtCal.getTime());
+        System.out.println("person.isBabyBoomer() = " + person.isBabyBoomer());
+        System.out.println("person1.isBabyBoomer() = " + person1.isBabyBoomer());
+
     }
 
     private static void objectPools() throws Exception {
@@ -30,7 +93,7 @@ public class Main {
         connection1.connect();
 
         // Return the connection to the pool
-        connection1.disconnect();
+         connection1.disconnect();
         connectionPool.returnObject(connection1);
 
         // Borrow another connection

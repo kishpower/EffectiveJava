@@ -1,0 +1,9 @@
+hello
+please
+avoid
+finalizers
+in
+the
+code
+use
+Autoclosable.
